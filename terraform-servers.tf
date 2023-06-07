@@ -1,6 +1,25 @@
 provider "aws" {
 region = "eu-central-1"
 }
+resource "aws_lb" "wordpress" {
+  name               = "wordpress-lb-tf"
+  internal           = false
+  load_balancer_type = "application"
+  
+  
+  enable_deletion_protection = false
+
+  access_logs {
+    bucket  = load-balancer-wordpress
+    prefix  = "wordpress-lb"
+    enabled = true
+  }
+
+  tags = {
+    Environment = "production"
+  }
+}
+
 resource "aws_instance" "my_webserver1" {
 ami        = "ami-0499632f10efc5a62"
 instance_type = "t3.micro"
@@ -13,6 +32,11 @@ instance_type = "t3.micro"
 vpc_security_group_ids = [aws_security_group.WebServer.id]
 }
 
+resource "aws_instance" "my_webserver3" {
+ami        = "ami-0499632f10efc5a62"
+instance_type = "t3.micro"
+vpc_security_group_ids = [aws_security_group.WebServer.id]
+}
 
 resource "aws_security_group" "WebServer" {
   name        = "WebServer Security Group"
